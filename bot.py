@@ -13,8 +13,7 @@ TOKEN = os.getenv("DISCORD_TOKEN", "").strip()
 TARGET_USER_ID = int(os.getenv("TARGET_USER_ID", "498130253038747648"))
 SECOND_USER_ID = int(os.getenv("SECOND_USER_ID", "437335754780442646"))
 TARGET_CHANNEL_ID = int(os.getenv("TARGET_CHANNEL_ID", "1283109126305611799"))
-NOZAR_MIN_MESSAGES = int(os.getenv("NOZAR_MIN_MESSAGES", "10"))
-NOZAR_MAX_MESSAGES = int(os.getenv("NOZAR_MAX_MESSAGES", "50"))
+NOZAR_REPLY_CHANCE = float(os.getenv("NOZAR_REPLY_CHANCE", "0.15"))
 SECOND_USER_MESSAGE_INTERVAL = int(os.getenv("SECOND_USER_MESSAGE_INTERVAL", "3"))
 ONLINE_PHRASE = os.getenv("ONLINE_PHRASE", "пошла нахуй отсюда")
 
@@ -30,22 +29,18 @@ class BatyaBot(discord.Client):
         intents.message_content = True
         intents.presences = True
         super().__init__(intents=intents, allowed_mentions=discord.AllowedMentions.none())
-        self.nozar_message_count = 0
-        self.nozar_next_reply_at = self.next_nozar_threshold()
         self.second_user_message_count = 0
-
-    def next_nozar_threshold(self):
-        return random.randint(NOZAR_MIN_MESSAGES, NOZAR_MAX_MESSAGES)
 
     async def on_ready(self):
         log.info(
-            "Connected as %s; target_user=%s; second_user=%s; target_channel=%s; phrases=%s; she_phrases=%s",
+            "Connected as %s; target_user=%s; second_user=%s; target_channel=%s; phrases=%s; she_phrases=%s; chance=%s",
             self.user,
             TARGET_USER_ID,
             SECOND_USER_ID,
             TARGET_CHANNEL_ID,
             len(BATYA_PHRASES),
             len(SHE_PHRASES),
+            NOZAR_REPLY_CHANCE,
         )
 
     async def send_to_target_channel(self, guild, text):
@@ -68,10 +63,7 @@ class BatyaBot(discord.Client):
             return
 
         if message.author.id == TARGET_USER_ID:
-            self.nozar_message_count += 1
-            if self.nozar_message_count >= self.nozar_next_reply_at:
-                self.nozar_message_count = 0
-                self.nozar_next_reply_at = self.next_nozar_threshold()
+            if random.random() < NOZAR_REPLY_CHANCE:
                 await message.channel.send(random.choice(BATYA_PHRASES))
             return
 
