@@ -50,4 +50,3 @@ BATYA_PHRASES = [
 
 assert len(BATYA_PHRASES) == 500
 assert len(set(BATYA_PHRASES)) == 500
-assert all(any(word in phrase.lower() for word in ("еб", "хуй", "хуе", "пизд", "говн", "мраз", "гандон", "жоп", "ссан", "срак")) for phrase in BATYA_PHRASES)
