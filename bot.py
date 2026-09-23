@@ -40,7 +40,7 @@ class BatyaBot(discord.Client):
         if message.author.id != TARGET_USER_ID or message.channel.id != TARGET_CHANNEL_ID:
             return
 
-        phrase = random.choice(list(BATYA_PHRASES.values()))
+        phrase = random.choice(BATYA_PHRASES)
         await message.channel.send(phrase)
 
 
